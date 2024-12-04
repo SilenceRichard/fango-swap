@@ -31,3 +31,7 @@ solidity: {
 init wagmi
 
 https://github.com/WTFAcademy/WTF-Dapp/blob/main/15_WagmiCli/readme.md
+
+本地hardat网络CORS
+
+在github codespace中将网络设置为公开
