@@ -293,8 +293,8 @@ export const factoryAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'tokenA', internalType: 'address', type: 'address' },
-      { name: 'tokenB', internalType: 'address', type: 'address' },
+      { name: 'token0', internalType: 'address', type: 'address' },
+      { name: 'token1', internalType: 'address', type: 'address' },
       { name: 'tickLower', internalType: 'int24', type: 'int24' },
       { name: 'tickUpper', internalType: 'int24', type: 'int24' },
       { name: 'fee', internalType: 'uint24', type: 'uint24' },
@@ -306,8 +306,8 @@ export const factoryAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'tokenA', internalType: 'address', type: 'address' },
-      { name: 'tokenB', internalType: 'address', type: 'address' },
+      { name: 'token0', internalType: 'address', type: 'address' },
+      { name: 'token1', internalType: 'address', type: 'address' },
       { name: 'index', internalType: 'uint32', type: 'uint32' },
     ],
     name: 'getPool',
@@ -320,8 +320,8 @@ export const factoryAbi = [
     name: 'parameters',
     outputs: [
       { name: 'factory', internalType: 'address', type: 'address' },
-      { name: 'tokenA', internalType: 'address', type: 'address' },
-      { name: 'tokenB', internalType: 'address', type: 'address' },
+      { name: 'token0', internalType: 'address', type: 'address' },
+      { name: 'token1', internalType: 'address', type: 'address' },
       { name: 'tickLower', internalType: 'int24', type: 'int24' },
       { name: 'tickUpper', internalType: 'int24', type: 'int24' },
       { name: 'fee', internalType: 'uint24', type: 'uint24' },
@@ -2365,8 +2365,8 @@ export const poolManagerAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'tokenA', internalType: 'address', type: 'address' },
-      { name: 'tokenB', internalType: 'address', type: 'address' },
+      { name: 'token0', internalType: 'address', type: 'address' },
+      { name: 'token1', internalType: 'address', type: 'address' },
       { name: 'tickLower', internalType: 'int24', type: 'int24' },
       { name: 'tickUpper', internalType: 'int24', type: 'int24' },
       { name: 'fee', internalType: 'uint24', type: 'uint24' },
@@ -2419,8 +2419,8 @@ export const poolManagerAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'tokenA', internalType: 'address', type: 'address' },
-      { name: 'tokenB', internalType: 'address', type: 'address' },
+      { name: 'token0', internalType: 'address', type: 'address' },
+      { name: 'token1', internalType: 'address', type: 'address' },
       { name: 'index', internalType: 'uint32', type: 'uint32' },
     ],
     name: 'getPool',
@@ -2443,8 +2443,8 @@ export const poolManagerAbi = [
     name: 'parameters',
     outputs: [
       { name: 'factory', internalType: 'address', type: 'address' },
-      { name: 'tokenA', internalType: 'address', type: 'address' },
-      { name: 'tokenB', internalType: 'address', type: 'address' },
+      { name: 'token0', internalType: 'address', type: 'address' },
+      { name: 'token1', internalType: 'address', type: 'address' },
       { name: 'tickLower', internalType: 'int24', type: 'int24' },
       { name: 'tickUpper', internalType: 'int24', type: 'int24' },
       { name: 'fee', internalType: 'uint24', type: 'uint24' },

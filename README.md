@@ -27,3 +27,7 @@ solidity: {
 +   },
   }
 ```
+
+init wagmi
+
+https://github.com/WTFAcademy/WTF-Dapp/blob/main/15_WagmiCli/readme.md
