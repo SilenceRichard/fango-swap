@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "@wagmi/cli": "^2.1.18"
+  },
+  "dependencies": {
+    "wagmi": "^2.13.3"
+  }
+}
