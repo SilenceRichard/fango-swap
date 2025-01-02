@@ -90,6 +90,15 @@ contract Pool is IPool {
         // Factory 创建 Pool 时会通 new Pool{salt: salt}() 的方式创建 Pool 合约，通过 salt 指定 Pool 的地址，这样其他地方也可以推算出 Pool 的地址
         // 参数通过读取 Factory 合约的 parameters 获取
         // 不通过构造函数传入，因为 CREATE2 会根据 initcode 计算出新地址（new_address = hash(0xFF, sender, salt, bytecode)），带上参数就不能计算出稳定的地址了
+
+        /**
+         * 
+         *  IFactory: 这是一个接口（interface），定义了工厂合约的标准。接口通常用于定义其他合约必须实现的函数。
+
+            msg.sender: 这是一个全局变量，表示当前调用合约的地址。在这个上下文中，它是调用Pool.sol合约的地址。
+
+            IFactory(msg.sender): 这部分代码将msg.sender地址转换为IFactory接口类型。这意味着msg.sender地址应该是一个实现了IFactory接口的合约地址。
+         */
         (factory, token0, token1, tickLower, tickUpper, fee) = IFactory(
             msg.sender
         ).parameters();
@@ -202,6 +211,10 @@ contract Pool is IPool {
                 liquidityDelta: int128(amount)
             })
         );
+        /**
+         * 
+         * amount0 和 amount1 是基于用户希望提供的流动性价值（amount) 以及池子中代币的数量和价格区间计算出的需要提供的代币数量
+         */
         amount0 = uint256(amount0Int);
         amount1 = uint256(amount1Int);
 
@@ -209,9 +222,9 @@ contract Pool is IPool {
         uint256 balance1Before;
         if (amount0 > 0) balance0Before = balance0();
         if (amount1 > 0) balance1Before = balance1();
-        // 回调 mintCallback
+        // 回调 mintCallback， 在PositionManager中实现
         IMintCallback(msg.sender).mintCallback(amount0, amount1, data);
-
+        //  确保在调用 mintCallback 函数后，合约的 token0 和 token1 的余额增加量不小于 amount0 和 amount1
         if (amount0 > 0)
             require(balance0Before.add(amount0) <= balance0(), "M0");
         if (amount1 > 0)
