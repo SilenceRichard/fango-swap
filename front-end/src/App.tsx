@@ -2,6 +2,7 @@ import "./App.css";
 import Header from "./Header"; // 添加Header组件的导入
 import { Routes, Route } from "react-router";
 import { Web3Provider } from "./Web3Provider";
+import Faucet from "./Faucet";
 
 function App() {
   return (
@@ -11,7 +12,7 @@ function App() {
         <Routes>
           <Route path="/" element={<div>Swap</div>} />
           <Route path="/pools" element={<div>Pools</div>} />
-          <Route path="/faucet" element={<div>Faucet</div>} />
+          <Route path="/faucet" element={<Faucet />} />
         </Routes>
       </div>
     </Web3Provider>
