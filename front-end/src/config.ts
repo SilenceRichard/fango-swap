@@ -1,14 +1,14 @@
 import { http, createConfig } from "wagmi";
-import { mainnet, localhost } from "wagmi/chains";
+import { mainnet, hardhat } from "wagmi/chains";
 import { getDefaultConfig } from "connectkit";
 
 export const config = createConfig(
   getDefaultConfig({
     // Your dApps chains
     
-    chains: [mainnet, localhost],
+    chains: [hardhat],
     transports: {
-      [localhost.id]: http("http://localhost:8545"),
+      [hardhat.id]: http("http://localhost:8545"),
       // RPC URL for each chain
       [mainnet.id]: http(
         // `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`
