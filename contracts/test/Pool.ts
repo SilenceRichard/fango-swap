@@ -87,4 +87,78 @@ describe("Pool", function () {
     expect(position).to.deep.equal([20000000n, 0n, 0n, 0n, 0n]);
     expect(await pool.read.liquidity()).to.equal(20000000n);
   });
+  it("swap", async function () {
+    const { pool, token0, token1, sqrtPriceX96 } = await loadFixture(
+      deployFixture
+    );
+    const testLP = await hre.viem.deployContract("TestLP");
+  
+    const initBalanceValue = 100000000000n * 10n ** 18n;
+    await token0.write.mint([testLP.address, initBalanceValue]);
+    await token1.write.mint([testLP.address, initBalanceValue]);
+  
+    // mint 多一些流动性，确保交易可以完全完成
+    const liquidityDelta = 1000000000000000000000000000n;
+    // mint 多一些流动性，确保交易可以完全完成
+    await testLP.write.mint([
+      testLP.address,
+      liquidityDelta,
+      pool.address,
+      token0.address,
+      token1.address,
+    ]);
+  
+    const lptoken0 = await token0.read.balanceOf([testLP.address]);
+    expect(lptoken0).to.equal(99995000161384542080378486215n);
+  
+    const lptoken1 = await token1.read.balanceOf([testLP.address]);
+    expect(lptoken1).to.equal(1000000000000000000000000000n);
+  
+    // 通过 TestSwap 合约交易
+    const testSwap = await hre.viem.deployContract("TestSwap");
+    const minPrice = 1000;
+    const minSqrtPriceX96: bigint = BigInt(
+      encodeSqrtRatioX96(minPrice, 1).toString()
+    );
+  
+    // 给 testSwap 合约中打入 token0 用于交易
+    await token0.write.mint([testSwap.address, 300n * 10n ** 18n]);
+  
+    expect(await token0.read.balanceOf([testSwap.address])).to.equal(
+      300n * 10n ** 18n
+    );
+    expect(await token1.read.balanceOf([testSwap.address])).to.equal(0n);
+    const result = await testSwap.simulate.testSwap([
+      testSwap.address,
+      100n * 10n ** 18n, // 卖出 100 个 token0
+      minSqrtPriceX96,
+      pool.address,
+      token0.address,
+      token1.address,
+    ]);
+    expect(result.result[0]).to.equal(100000000000000000000n); // 需要 100个 token0
+    expect(result.result[1]).to.equal(-996990060009101709255958n); // 大概需要 100 * 10000 个 token1
+  
+    await testSwap.write.testSwap([
+      testSwap.address,
+      100n * 10n ** 18n,
+      minSqrtPriceX96,
+      pool.address,
+      token0.address,
+      token1.address,
+    ]);
+    const costToken0 =
+      300n * 10n ** 18n - (await token0.read.balanceOf([testSwap.address]));
+    const receivedToken1 = await token1.read.balanceOf([testSwap.address]);
+    const newPrice = (await pool.read.sqrtPriceX96()) as bigint;
+    const liquidity = await pool.read.liquidity();
+    expect(newPrice).to.equal(7922737261735934252089901697281n);
+    expect(sqrtPriceX96 - newPrice).to.equal(78989690499507264493336319n); // 价格下跌
+    expect(liquidity).to.equal(liquidityDelta); // 流动性不变
+  
+    // 用户消耗了 100 个 token0
+    expect(costToken0).to.equal(100n * 10n ** 18n);
+    // 用户获得了大约 100 * 10000 个 token1
+    expect(receivedToken1).to.equal(996990060009101709255958n);
+  });
 });

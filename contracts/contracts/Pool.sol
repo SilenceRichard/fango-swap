@@ -313,13 +313,13 @@ contract Pool is IPool {
 
     function swap(
         address recipient,
-        bool zeroForOne,
-        int256 amountSpecified,
-        uint160 sqrtPriceLimitX96,
+        bool zeroForOne, // true: token0 -> token1, false: token1 -> token0
+        int256 amountSpecified, // 用户指定的 token0 或 token1 的数量 >0 代表 token0，<0 代表 token1
+        uint160 sqrtPriceLimitX96, // 交易的价格限制，swap操作中，它用于防止价格滑点超过预期范围，从而保护交易者的利益。
         bytes calldata data
     ) external override returns (int256 amount0, int256 amount1) {
         require(amountSpecified != 0, "AS");
-
+        // sqrtPriceX96： 当前交易对平方根价格
         // zeroForOne: 如果从 token0 交换 token1 则为 true，从 token1 交换 token0 则为 false
         // 判断当前价格是否满足交易的条件
         require(
@@ -394,12 +394,14 @@ contract Pool is IPool {
 
         // 计算交易后用户手里的 token0 和 token1 的数量
         if (exactInput) {
+            // 用户指定了 token0 的数量
             state.amountSpecifiedRemaining -= (state.amountIn + state.feeAmount)
                 .toInt256();
             state.amountCalculated = state.amountCalculated.sub(
                 state.amountOut.toInt256()
             );
         } else {
+            // 用户指定了 token1 的数量
             state.amountSpecifiedRemaining += state.amountOut.toInt256();
             state.amountCalculated = state.amountCalculated.add(
                 (state.amountIn + state.feeAmount).toInt256()
