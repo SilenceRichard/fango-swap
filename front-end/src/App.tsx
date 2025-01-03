@@ -11,6 +11,7 @@ function App() {
         <Routes>
           <Route path="/" element={<div>Swap</div>} />
           <Route path="/pools" element={<div>Pools</div>} />
+          <Route path="/faucet" element={<div>Faucet</div>} />
         </Routes>
       </div>
     </Web3Provider>

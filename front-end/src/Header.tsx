@@ -9,7 +9,8 @@ const Header = () => {
         <NavLink to="/" className="mr-4">
           Swap
         </NavLink>
-        <NavLink to="/pools">Pools</NavLink>
+        <NavLink to="/pools" className="mr-4">Pools</NavLink>
+        <NavLink to="/faucet">Faucet</NavLink>
       </nav>
       <ConnectKitButton />
     </header>
