@@ -10,6 +10,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./components/ui/select";
+import { getContractAddress } from "./utils/common";
 
 interface FaucetProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -20,7 +28,7 @@ interface FaucetProps {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function FaucetForm({ form }: FaucetProps) {
   // 2. Define a submit handler.
-  
+
   return (
     <Form {...form}>
       <form className="space-y-8">
@@ -30,9 +38,18 @@ export function FaucetForm({ form }: FaucetProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Token Address</FormLabel>
-              <FormControl>
-                <Input placeholder="input token address here" {...field} />
-              </FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select token addres" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value={getContractAddress("DebugTokenA")}>DTA</SelectItem>
+                  <SelectItem value={getContractAddress("DebugTokenB")}>DTB</SelectItem>
+                  <SelectItem value={getContractAddress("DebugTokenC")}>DTC</SelectItem>
+                </SelectContent>
+              </Select>
               <FormDescription>
                 Fill in the address of the token you want to mint.
               </FormDescription>

@@ -7,13 +7,15 @@ import { z } from "zod";
 import { FaucetForm } from "./FaucetForm";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   tokenAddress: z.string(),
-  amount: z.string().nonempty("Amount is required"),
+  amount: z.number().min(1),
 });
 
 const Faucet = () => {
+  const { toast } = useToast();
   const { writeContractAsync } = useWriteDebugTokenMint({});
   const { address, chainId } = useAccount();
   const { switchChain } = useSwitchChain();
@@ -22,7 +24,7 @@ const Faucet = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       tokenAddress: getContractAddress("DebugTokenA"),
-      amount: "1000000000000000000",
+      amount: 100,
     },
   });
   const formVal = form.getValues();
@@ -38,7 +40,6 @@ const Faucet = () => {
             // message.warning("Please connect wallet");
             return;
           }
-          console.log("Mint start");
           if (chainId !== hardhat.id) {
             try {
               await switchChain?.({
@@ -46,6 +47,10 @@ const Faucet = () => {
               });
             } catch (error) {
               console.error("Failed to switch network", error);
+              toast({
+                title: "Failed to switch network",
+                description: (error as Error).message,
+              });
               return;
             }
           }
@@ -53,11 +58,19 @@ const Faucet = () => {
             await writeContractAsync({
               address: tokenAddress,
               chainId: hardhat.id,
-              args: [address as `0x${string}`, BigInt(amount)],
+              args: [address as `0x${string}`, BigInt(amount * 10 ** 18)],
+            });
+            toast({
+              title: "Mint success",
+              description: `Mint ${amount} tokens to ${address}`,
             });
             // message.success("Mint success");
           } catch (err: unknown) {
             console.log(err);
+            toast({
+              title: "Mint failed",
+              description: (err as Error).message,
+            });
             // message.error(error.message);
           }
           // setLoading(false);
