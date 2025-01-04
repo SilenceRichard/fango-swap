@@ -1,6 +1,5 @@
 import { parsePriceToSqrtPriceX96, getContractAddress } from "@/utils/common";
 import {
-  useReadPoolManagerGetAllPools,
   useWritePoolManagerCreateAndInitializePoolIfNecessary,
 } from "@/utils/contracts";
 import { Button } from "./components/ui/button";
@@ -16,10 +15,6 @@ interface CreatePoolParams {
 
 export const AddPoolModal = () => {
   const { toast } = useToast();
-  const { data = [], refetch } = useReadPoolManagerGetAllPools({
-    address: getContractAddress("PoolManager"),
-  });
-  console.log("data--", data);
   const createParams = {
     token1: getContractAddress("DebugTokenA"),
     token0: getContractAddress("DebugTokenB"),
@@ -47,7 +42,6 @@ export const AddPoolModal = () => {
     toast({
       title: "Add pool success",
     });
-    refetch();
   };
   return <Button onClick={handleAdd}>Add Pool</Button>;
 };
