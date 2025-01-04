@@ -1,24 +1,38 @@
 import { useWriteDebugTokenMint } from "@/utils/contracts";
-import { useAccount,  useSwitchChain  } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import { getContractAddress } from "@/utils/common";
 import { hardhat } from "viem/chains";
+import { z } from "zod";
+import { FaucetForm } from "./FaucetForm";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const formSchema = z.object({
+  tokenAddress: z.string(),
+  amount: z.string().nonempty("Amount is required"),
+});
 
 const Faucet = () => {
   const { writeContractAsync } = useWriteDebugTokenMint({});
-  const { address, chain, chainId } = useAccount();
-  console.log("chain", chain, chainId);
+  const { address, chainId } = useAccount();
   const { switchChain } = useSwitchChain();
-  // const chainId = useChainId();
-  // const [loading, setLoading] = useState(false);
-  const [tokenAddress, setTokenAddress] = useState<`0x${string}`>(
-    getContractAddress("DebugTokenA")
-  );
-  const amount = 1000000000000000000;
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      tokenAddress: getContractAddress("DebugTokenA"),
+      amount: "1000000000000000000",
+    },
+  });
+  const formVal = form.getValues();
+  const tokenAddress = formVal.tokenAddress as `0x${string}`;
+  const amount = formVal.amount;
   return (
     <>
+      <FaucetForm form={form} formSchema={formSchema} />
       <Button
+        className="mt-4"
         onClick={async () => {
           if (!address) {
             // message.warning("Please connect wallet");
@@ -31,17 +45,14 @@ const Faucet = () => {
                 chainId: hardhat.id,
               });
             } catch (error) {
-              console.error('Failed to switch network', error);
+              console.error("Failed to switch network", error);
               return;
             }
           }
-      
-          // console.log("mint", tokenAddress, account?.address, amount);
-          // setLoading(true);
           try {
             await writeContractAsync({
               address: tokenAddress,
-              chainId: 31337,
+              chainId: hardhat.id,
               args: [address as `0x${string}`, BigInt(amount)],
             });
             // message.success("Mint success");

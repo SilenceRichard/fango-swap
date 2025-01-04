@@ -1,0 +1,10 @@
+{
+  "extends": [
+    // ...existing configurations...
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    // ...existing rules...
+    "@typescript-eslint/no-explicit-any": "off"
+  }
+}
