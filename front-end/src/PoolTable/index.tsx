@@ -1,17 +1,17 @@
-import { useReadPoolManagerGetAllPools } from "@/utils/contracts";
-import { PoolList, columns } from "./columns";
-import { DataTable } from "./data-table";
-import { getContractAddress } from "@/utils/common";
 
-//@
-export default function PoolTable() {
-  const { data = [], refetch } = useReadPoolManagerGetAllPools({
-    address: getContractAddress("PoolManager"),
-  });
-  const datas =JSON.parse(JSON.stringify(data));
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
+
+interface PoolTableProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tableData: any;
+}
+
+export default function PoolTable({ tableData }: PoolTableProps) {
+
   return (
-    <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={datas} />
+    <div className="container py-10">
+      <DataTable columns={columns} data={tableData} />
     </div>
   );
 }
