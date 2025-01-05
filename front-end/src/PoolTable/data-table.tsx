@@ -18,7 +18,8 @@ import {
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any
 }
 
 export function DataTable<TData, TValue>({

@@ -1,5 +1,6 @@
 "use client";
 
+import { TOKEN_LIST } from "@/constant";
 import { ColumnDef } from "@tanstack/react-table";
 
 // This type is used to define the shape of our data.
@@ -20,10 +21,18 @@ export const columns: ColumnDef<PoolList>[] = [
   {
     accessorKey: "token0",
     header: "Token 0",
+    cell: (cell) => {
+      const tokenAddress: string = cell.getValue() as unknown as string;
+      return <div>{TOKEN_LIST[tokenAddress]}</div>;
+    },
   },
   {
     accessorKey: "token1",
     header: "Token 1",
+    cell: (cell) => {
+      const tokenAddress: string = cell.getValue() as unknown as string;
+      return <div>{TOKEN_LIST[tokenAddress]}</div>;
+    },
   },
   {
     accessorKey: "fee",
@@ -40,5 +49,5 @@ export const columns: ColumnDef<PoolList>[] = [
   {
     accessorKey: "sqrtPriceX96",
     header: "Sqrt Price X96",
-  }
+  },
 ];
