@@ -2096,23 +2096,15 @@ export const iPositionManagerAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
-    name: 'getApproved',
-    outputs: [{ name: 'operator', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'positionId', internalType: 'uint256[]', type: 'uint256[]' },
-    ],
-    name: 'getPositionInfo',
+    inputs: [],
+    name: 'getAllPositions',
     outputs: [
       {
         name: 'positionInfo',
         internalType: 'struct IPositionManager.PositionInfo[]',
         type: 'tuple[]',
         components: [
+          { name: 'id', internalType: 'uint256', type: 'uint256' },
           { name: 'owner', internalType: 'address', type: 'address' },
           { name: 'token0', internalType: 'address', type: 'address' },
           { name: 'token1', internalType: 'address', type: 'address' },
@@ -2136,6 +2128,13 @@ export const iPositionManagerAbi = [
         ],
       },
     ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
+    name: 'getApproved',
+    outputs: [{ name: 'operator', internalType: 'address', type: 'address' }],
     stateMutability: 'view',
   },
   {
@@ -2251,6 +2250,167 @@ export const iPositionManagerAbi = [
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const iSwapCallbackAbi = [
+  {
+    type: 'function',
+    inputs: [
+      { name: 'amount0Delta', internalType: 'int256', type: 'int256' },
+      { name: 'amount1Delta', internalType: 'int256', type: 'int256' },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'swapCallback',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ISwapRouter
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const iSwapRouterAbi = [
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'zeroForOne',
+        internalType: 'bool',
+        type: 'bool',
+        indexed: false,
+      },
+      {
+        name: 'amountIn',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'amountInRemaining',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'amountOut',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'Swap',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'params',
+        internalType: 'struct ISwapRouter.ExactInputParams',
+        type: 'tuple',
+        components: [
+          { name: 'tokenIn', internalType: 'address', type: 'address' },
+          { name: 'tokenOut', internalType: 'address', type: 'address' },
+          { name: 'indexPath', internalType: 'uint32[]', type: 'uint32[]' },
+          { name: 'recipient', internalType: 'address', type: 'address' },
+          { name: 'deadline', internalType: 'uint256', type: 'uint256' },
+          { name: 'amountIn', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'amountOutMinimum',
+            internalType: 'uint256',
+            type: 'uint256',
+          },
+          {
+            name: 'sqrtPriceLimitX96',
+            internalType: 'uint160',
+            type: 'uint160',
+          },
+        ],
+      },
+    ],
+    name: 'exactInput',
+    outputs: [{ name: 'amountOut', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'params',
+        internalType: 'struct ISwapRouter.ExactOutputParams',
+        type: 'tuple',
+        components: [
+          { name: 'tokenIn', internalType: 'address', type: 'address' },
+          { name: 'tokenOut', internalType: 'address', type: 'address' },
+          { name: 'indexPath', internalType: 'uint32[]', type: 'uint32[]' },
+          { name: 'recipient', internalType: 'address', type: 'address' },
+          { name: 'deadline', internalType: 'uint256', type: 'uint256' },
+          { name: 'amountOut', internalType: 'uint256', type: 'uint256' },
+          { name: 'amountInMaximum', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'sqrtPriceLimitX96',
+            internalType: 'uint160',
+            type: 'uint160',
+          },
+        ],
+      },
+    ],
+    name: 'exactOutput',
+    outputs: [{ name: 'amountIn', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'params',
+        internalType: 'struct ISwapRouter.QuoteExactInputParams',
+        type: 'tuple',
+        components: [
+          { name: 'tokenIn', internalType: 'address', type: 'address' },
+          { name: 'tokenOut', internalType: 'address', type: 'address' },
+          { name: 'indexPath', internalType: 'uint32[]', type: 'uint32[]' },
+          { name: 'amountIn', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'sqrtPriceLimitX96',
+            internalType: 'uint160',
+            type: 'uint160',
+          },
+        ],
+      },
+    ],
+    name: 'quoteExactInput',
+    outputs: [{ name: 'amountOut', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'params',
+        internalType: 'struct ISwapRouter.QuoteExactOutputParams',
+        type: 'tuple',
+        components: [
+          { name: 'tokenIn', internalType: 'address', type: 'address' },
+          { name: 'tokenOut', internalType: 'address', type: 'address' },
+          { name: 'indexPath', internalType: 'uint32[]', type: 'uint32[]' },
+          { name: 'amountOut', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'sqrtPriceLimitX96',
+            internalType: 'uint160',
+            type: 'uint160',
+          },
+        ],
+      },
+    ],
+    name: 'quoteExactOutput',
+    outputs: [{ name: 'amountIn', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'nonpayable',
+  },
   {
     type: 'function',
     inputs: [
@@ -2988,23 +3148,15 @@ export const positionManagerAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
-    name: 'getApproved',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'positionId', internalType: 'uint256[]', type: 'uint256[]' },
-    ],
-    name: 'getPositionInfo',
+    inputs: [],
+    name: 'getAllPositions',
     outputs: [
       {
         name: 'positionInfo',
         internalType: 'struct IPositionManager.PositionInfo[]',
         type: 'tuple[]',
         components: [
+          { name: 'id', internalType: 'uint256', type: 'uint256' },
           { name: 'owner', internalType: 'address', type: 'address' },
           { name: 'token0', internalType: 'address', type: 'address' },
           { name: 'token1', internalType: 'address', type: 'address' },
@@ -3028,6 +3180,13 @@ export const positionManagerAbi = [
         ],
       },
     ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
+    name: 'getApproved',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
     stateMutability: 'view',
   },
   {
@@ -3113,6 +3272,7 @@ export const positionManagerAbi = [
     inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     name: 'positions',
     outputs: [
+      { name: 'id', internalType: 'uint256', type: 'uint256' },
       { name: 'owner', internalType: 'address', type: 'address' },
       { name: 'token0', internalType: 'address', type: 'address' },
       { name: 'token1', internalType: 'address', type: 'address' },
@@ -3248,6 +3408,200 @@ export const stringsAbi = [
       { name: 'length', internalType: 'uint256', type: 'uint256' },
     ],
     name: 'StringsInsufficientHexLength',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// SwapRouter
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const swapRouterAbi = [
+  {
+    type: 'constructor',
+    inputs: [
+      { name: '_poolManager', internalType: 'address', type: 'address' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'zeroForOne',
+        internalType: 'bool',
+        type: 'bool',
+        indexed: false,
+      },
+      {
+        name: 'amountIn',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'amountInRemaining',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'amountOut',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'Swap',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'params',
+        internalType: 'struct ISwapRouter.ExactInputParams',
+        type: 'tuple',
+        components: [
+          { name: 'tokenIn', internalType: 'address', type: 'address' },
+          { name: 'tokenOut', internalType: 'address', type: 'address' },
+          { name: 'indexPath', internalType: 'uint32[]', type: 'uint32[]' },
+          { name: 'recipient', internalType: 'address', type: 'address' },
+          { name: 'deadline', internalType: 'uint256', type: 'uint256' },
+          { name: 'amountIn', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'amountOutMinimum',
+            internalType: 'uint256',
+            type: 'uint256',
+          },
+          {
+            name: 'sqrtPriceLimitX96',
+            internalType: 'uint160',
+            type: 'uint160',
+          },
+        ],
+      },
+    ],
+    name: 'exactInput',
+    outputs: [{ name: 'amountOut', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'params',
+        internalType: 'struct ISwapRouter.ExactOutputParams',
+        type: 'tuple',
+        components: [
+          { name: 'tokenIn', internalType: 'address', type: 'address' },
+          { name: 'tokenOut', internalType: 'address', type: 'address' },
+          { name: 'indexPath', internalType: 'uint32[]', type: 'uint32[]' },
+          { name: 'recipient', internalType: 'address', type: 'address' },
+          { name: 'deadline', internalType: 'uint256', type: 'uint256' },
+          { name: 'amountOut', internalType: 'uint256', type: 'uint256' },
+          { name: 'amountInMaximum', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'sqrtPriceLimitX96',
+            internalType: 'uint160',
+            type: 'uint160',
+          },
+        ],
+      },
+    ],
+    name: 'exactOutput',
+    outputs: [{ name: 'amountIn', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'poolManager',
+    outputs: [
+      { name: '', internalType: 'contract IPoolManager', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'params',
+        internalType: 'struct ISwapRouter.QuoteExactInputParams',
+        type: 'tuple',
+        components: [
+          { name: 'tokenIn', internalType: 'address', type: 'address' },
+          { name: 'tokenOut', internalType: 'address', type: 'address' },
+          { name: 'indexPath', internalType: 'uint32[]', type: 'uint32[]' },
+          { name: 'amountIn', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'sqrtPriceLimitX96',
+            internalType: 'uint160',
+            type: 'uint160',
+          },
+        ],
+      },
+    ],
+    name: 'quoteExactInput',
+    outputs: [{ name: 'amountOut', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'params',
+        internalType: 'struct ISwapRouter.QuoteExactOutputParams',
+        type: 'tuple',
+        components: [
+          { name: 'tokenIn', internalType: 'address', type: 'address' },
+          { name: 'tokenOut', internalType: 'address', type: 'address' },
+          { name: 'indexPath', internalType: 'uint32[]', type: 'uint32[]' },
+          { name: 'amountOut', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'sqrtPriceLimitX96',
+            internalType: 'uint160',
+            type: 'uint160',
+          },
+        ],
+      },
+    ],
+    name: 'quoteExactOutput',
+    outputs: [{ name: 'amountIn', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'amount0Delta', internalType: 'int256', type: 'int256' },
+      { name: 'amount1Delta', internalType: 'int256', type: 'int256' },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'swapCallback',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'pool', internalType: 'contract IPool', type: 'address' },
+      { name: 'recipient', internalType: 'address', type: 'address' },
+      { name: 'zeroForOne', internalType: 'bool', type: 'bool' },
+      { name: 'amountSpecified', internalType: 'int256', type: 'int256' },
+      { name: 'sqrtPriceLimitX96', internalType: 'uint160', type: 'uint160' },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'swapInPool',
+    outputs: [
+      { name: 'amount0', internalType: 'int256', type: 'int256' },
+      { name: 'amount1', internalType: 'int256', type: 'int256' },
+    ],
+    stateMutability: 'nonpayable',
   },
 ] as const
 
@@ -5265,21 +5619,21 @@ export const useReadIPositionManagerBalanceOf =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link iPositionManagerAbi}__ and `functionName` set to `"getAllPositions"`
+ */
+export const useReadIPositionManagerGetAllPositions =
+  /*#__PURE__*/ createUseReadContract({
+    abi: iPositionManagerAbi,
+    functionName: 'getAllPositions',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link iPositionManagerAbi}__ and `functionName` set to `"getApproved"`
  */
 export const useReadIPositionManagerGetApproved =
   /*#__PURE__*/ createUseReadContract({
     abi: iPositionManagerAbi,
     functionName: 'getApproved',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link iPositionManagerAbi}__ and `functionName` set to `"getPositionInfo"`
- */
-export const useReadIPositionManagerGetPositionInfo =
-  /*#__PURE__*/ createUseReadContract({
-    abi: iPositionManagerAbi,
-    functionName: 'getPositionInfo',
   })
 
 /**
@@ -5529,6 +5883,125 @@ export const useSimulateISwapCallbackSwapCallback =
   /*#__PURE__*/ createUseSimulateContract({
     abi: iSwapCallbackAbi,
     functionName: 'swapCallback',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iSwapRouterAbi}__
+ */
+export const useWriteISwapRouter = /*#__PURE__*/ createUseWriteContract({
+  abi: iSwapRouterAbi,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iSwapRouterAbi}__ and `functionName` set to `"exactInput"`
+ */
+export const useWriteISwapRouterExactInput =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iSwapRouterAbi,
+    functionName: 'exactInput',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iSwapRouterAbi}__ and `functionName` set to `"exactOutput"`
+ */
+export const useWriteISwapRouterExactOutput =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iSwapRouterAbi,
+    functionName: 'exactOutput',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iSwapRouterAbi}__ and `functionName` set to `"quoteExactInput"`
+ */
+export const useWriteISwapRouterQuoteExactInput =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iSwapRouterAbi,
+    functionName: 'quoteExactInput',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iSwapRouterAbi}__ and `functionName` set to `"quoteExactOutput"`
+ */
+export const useWriteISwapRouterQuoteExactOutput =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iSwapRouterAbi,
+    functionName: 'quoteExactOutput',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link iSwapRouterAbi}__ and `functionName` set to `"swapCallback"`
+ */
+export const useWriteISwapRouterSwapCallback =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: iSwapRouterAbi,
+    functionName: 'swapCallback',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iSwapRouterAbi}__
+ */
+export const useSimulateISwapRouter = /*#__PURE__*/ createUseSimulateContract({
+  abi: iSwapRouterAbi,
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iSwapRouterAbi}__ and `functionName` set to `"exactInput"`
+ */
+export const useSimulateISwapRouterExactInput =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iSwapRouterAbi,
+    functionName: 'exactInput',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iSwapRouterAbi}__ and `functionName` set to `"exactOutput"`
+ */
+export const useSimulateISwapRouterExactOutput =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iSwapRouterAbi,
+    functionName: 'exactOutput',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iSwapRouterAbi}__ and `functionName` set to `"quoteExactInput"`
+ */
+export const useSimulateISwapRouterQuoteExactInput =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iSwapRouterAbi,
+    functionName: 'quoteExactInput',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iSwapRouterAbi}__ and `functionName` set to `"quoteExactOutput"`
+ */
+export const useSimulateISwapRouterQuoteExactOutput =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iSwapRouterAbi,
+    functionName: 'quoteExactOutput',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link iSwapRouterAbi}__ and `functionName` set to `"swapCallback"`
+ */
+export const useSimulateISwapRouterSwapCallback =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: iSwapRouterAbi,
+    functionName: 'swapCallback',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iSwapRouterAbi}__
+ */
+export const useWatchISwapRouterEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: iSwapRouterAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link iSwapRouterAbi}__ and `eventName` set to `"Swap"`
+ */
+export const useWatchISwapRouterSwapEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: iSwapRouterAbi,
+    eventName: 'Swap',
   })
 
 /**
@@ -5989,21 +6462,21 @@ export const useReadPositionManagerBalanceOf =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link positionManagerAbi}__ and `functionName` set to `"getAllPositions"`
+ */
+export const useReadPositionManagerGetAllPositions =
+  /*#__PURE__*/ createUseReadContract({
+    abi: positionManagerAbi,
+    functionName: 'getAllPositions',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link positionManagerAbi}__ and `functionName` set to `"getApproved"`
  */
 export const useReadPositionManagerGetApproved =
   /*#__PURE__*/ createUseReadContract({
     abi: positionManagerAbi,
     functionName: 'getApproved',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link positionManagerAbi}__ and `functionName` set to `"getPositionInfo"`
- */
-export const useReadPositionManagerGetPositionInfo =
-  /*#__PURE__*/ createUseReadContract({
-    abi: positionManagerAbi,
-    functionName: 'getPositionInfo',
   })
 
 /**
@@ -6268,6 +6741,157 @@ export const useWatchPositionManagerTransferEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: positionManagerAbi,
     eventName: 'Transfer',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link swapRouterAbi}__
+ */
+export const useReadSwapRouter = /*#__PURE__*/ createUseReadContract({
+  abi: swapRouterAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link swapRouterAbi}__ and `functionName` set to `"poolManager"`
+ */
+export const useReadSwapRouterPoolManager = /*#__PURE__*/ createUseReadContract(
+  { abi: swapRouterAbi, functionName: 'poolManager' },
+)
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link swapRouterAbi}__
+ */
+export const useWriteSwapRouter = /*#__PURE__*/ createUseWriteContract({
+  abi: swapRouterAbi,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link swapRouterAbi}__ and `functionName` set to `"exactInput"`
+ */
+export const useWriteSwapRouterExactInput =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: swapRouterAbi,
+    functionName: 'exactInput',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link swapRouterAbi}__ and `functionName` set to `"exactOutput"`
+ */
+export const useWriteSwapRouterExactOutput =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: swapRouterAbi,
+    functionName: 'exactOutput',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link swapRouterAbi}__ and `functionName` set to `"quoteExactInput"`
+ */
+export const useWriteSwapRouterQuoteExactInput =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: swapRouterAbi,
+    functionName: 'quoteExactInput',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link swapRouterAbi}__ and `functionName` set to `"quoteExactOutput"`
+ */
+export const useWriteSwapRouterQuoteExactOutput =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: swapRouterAbi,
+    functionName: 'quoteExactOutput',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link swapRouterAbi}__ and `functionName` set to `"swapCallback"`
+ */
+export const useWriteSwapRouterSwapCallback =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: swapRouterAbi,
+    functionName: 'swapCallback',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link swapRouterAbi}__ and `functionName` set to `"swapInPool"`
+ */
+export const useWriteSwapRouterSwapInPool =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: swapRouterAbi,
+    functionName: 'swapInPool',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link swapRouterAbi}__
+ */
+export const useSimulateSwapRouter = /*#__PURE__*/ createUseSimulateContract({
+  abi: swapRouterAbi,
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link swapRouterAbi}__ and `functionName` set to `"exactInput"`
+ */
+export const useSimulateSwapRouterExactInput =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: swapRouterAbi,
+    functionName: 'exactInput',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link swapRouterAbi}__ and `functionName` set to `"exactOutput"`
+ */
+export const useSimulateSwapRouterExactOutput =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: swapRouterAbi,
+    functionName: 'exactOutput',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link swapRouterAbi}__ and `functionName` set to `"quoteExactInput"`
+ */
+export const useSimulateSwapRouterQuoteExactInput =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: swapRouterAbi,
+    functionName: 'quoteExactInput',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link swapRouterAbi}__ and `functionName` set to `"quoteExactOutput"`
+ */
+export const useSimulateSwapRouterQuoteExactOutput =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: swapRouterAbi,
+    functionName: 'quoteExactOutput',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link swapRouterAbi}__ and `functionName` set to `"swapCallback"`
+ */
+export const useSimulateSwapRouterSwapCallback =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: swapRouterAbi,
+    functionName: 'swapCallback',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link swapRouterAbi}__ and `functionName` set to `"swapInPool"`
+ */
+export const useSimulateSwapRouterSwapInPool =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: swapRouterAbi,
+    functionName: 'swapInPool',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link swapRouterAbi}__
+ */
+export const useWatchSwapRouterEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: swapRouterAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link swapRouterAbi}__ and `eventName` set to `"Swap"`
+ */
+export const useWatchSwapRouterSwapEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: swapRouterAbi,
+    eventName: 'Swap',
   })
 
 /**

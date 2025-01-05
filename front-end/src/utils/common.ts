@@ -12,18 +12,18 @@ export const getContractAddress = (
   const isProd = process.env.NODE_ENV === "production";
   if (contract === "PoolManager") {
     return isProd
-      ? "0xE6E340D132b5f46d1e472DebcD681B2aBc16e57E"
-      : "0xE6E340D132b5f46d1e472DebcD681B2aBc16e57E";
+      ? "0x7969c5eD335650692Bc04293B07F5BF2e7A673C0"
+      : "0x7969c5eD335650692Bc04293B07F5BF2e7A673C0";
   }
   if (contract === "PositionManager") {
     return isProd
-      ? "0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690"
-      : "0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690";
+      ? "0x7bc06c482DEAd17c0e297aFbC32f6e63d3846650"
+      : "0x7bc06c482DEAd17c0e297aFbC32f6e63d3846650";
   }
   if (contract === "SwapRouter") {
     return isProd
-      ? "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB"
-      : "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB";
+      ? "0xc351628EB244ec633d5f21fBD6621e1a683B1181"
+      : "0xc351628EB244ec633d5f21fBD6621e1a683B1181";
   }
   if (contract === "DebugTokenA") {
     return isProd
