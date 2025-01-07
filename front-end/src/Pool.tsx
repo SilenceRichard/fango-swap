@@ -16,6 +16,7 @@ export const Pool = () => {
   const { data: positionData = [], refetch: refecthPosition } = useReadPositionManagerGetAllPositions({
     address: getContractAddress("PositionManager"),
   });
+  console.log("data", data, positionData);
   return (
     <>
       <Tabs defaultValue="pool" className="w-full">

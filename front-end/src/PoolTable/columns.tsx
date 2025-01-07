@@ -35,6 +35,15 @@ export const columns: ColumnDef<PoolList>[] = [
     },
   },
   {
+    accessorKey: "liquidity",
+    header: () => <div className="whitespace-nowrap">Liquidity</div>,
+    cell: (cell) => { 
+      const liquidity: bigint = cell.getValue() as unknown as bigint;
+      const formattedLiquidity = Number(liquidity) / 10 ** 18; // 假设流动性是以18位小数表示的
+      return <div>{formattedLiquidity.toFixed(6)}</div>; // 展示6位小数
+    },
+  },
+  {
     accessorKey: "fee",
     header: "Fee",
   },

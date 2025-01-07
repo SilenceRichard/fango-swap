@@ -5,6 +5,7 @@ import { Web3Provider } from "./Web3Provider";
 import Faucet from "./Faucet";
 import { Toaster } from "./components/ui/toaster";
 import { Pool } from "./Pool";
+import Swap from "./Swap";
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
       <Header /> {/* 添加Header组件 */}
       <div className="p-16">
         <Routes>
-          <Route path="/" element={<div>Swap</div>} />
+          <Route path="/" element={<Swap />} />
           <Route path="/pools" element={<Pool />} />
           <Route path="/faucet" element={<Faucet />} />
         </Routes>
