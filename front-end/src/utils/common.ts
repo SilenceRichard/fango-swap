@@ -13,33 +13,33 @@ export const getContractAddress = (
   const isProd = process.env.NODE_ENV === "production";
   if (contract === "PoolManager") {
     return isProd
-      ? "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853"
-      : "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853";
+      ? "0x36b58F5C1969B7b6591D752ea6F5486D069010AB"
+      : "0x36b58F5C1969B7b6591D752ea6F5486D069010AB";
   }
   if (contract === "PositionManager") {
     return isProd
-      ? "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6"
-      : "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6";
+      ? "0x8198f5d8F8CfFE8f9C413d98a0A55aEB8ab9FbB7"
+      : "0x8198f5d8F8CfFE8f9C413d98a0A55aEB8ab9FbB7";
   }
   if (contract === "SwapRouter") {
     return isProd
-      ? "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318"
-      : "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318";
+      ? "0x0355B7B8cb128fA5692729Ab3AAa199C1753f726"
+      : "0x0355B7B8cb128fA5692729Ab3AAa199C1753f726";
   }
   if (contract === "DebugTokenA") {
     return isProd
-      ? "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
-      : "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
+      ? "0xD8a5a9b31c3C0232E196d518E89Fd8bF83AcAd43"
+      : "0xD8a5a9b31c3C0232E196d518E89Fd8bF83AcAd43";
   }
   if (contract === "DebugTokenB") {
     return isProd
-      ? "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"
-      : "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707";
+      ? "0xDC11f7E700A4c898AE5CAddB1082cFfa76512aDD"
+      : "0xDC11f7E700A4c898AE5CAddB1082cFfa76512aDD";
   }
   if (contract === "DebugTokenC") {
     return isProd
-      ? "0x0165878A594ca255338adfa4d48449f69242Eb8F"
-      : "0x0165878A594ca255338adfa4d48449f69242Eb8F";
+      ? "0x51A1ceB83B83F1985a81C295d1fF28Afef186E02"
+      : "0x51A1ceB83B83F1985a81C295d1fF28Afef186E02";
   }
   throw new Error("Invalid contract");
 };

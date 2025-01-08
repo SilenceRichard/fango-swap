@@ -5,6 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useReadPoolManagerGetAllPools,
   useReadPositionManagerGetAllPositions,
+  useWritePositionManagerBurn,
+  useWritePositionManagerCollect,
 } from "@/utils/contracts";
 import { getContractAddress } from "./utils/common";
 import PositionTable from "./PositionTable";
@@ -16,7 +18,8 @@ export const Pool = () => {
   const { data: positionData = [], refetch: refecthPosition } = useReadPositionManagerGetAllPositions({
     address: getContractAddress("PositionManager"),
   });
-  console.log("data", data, positionData);
+  const { writeContractAsync: burnPosition } = useWritePositionManagerBurn();
+  const { writeContractAsync: collectPosition } = useWritePositionManagerCollect();
   return (
     <>
       <Tabs defaultValue="pool" className="w-full">
@@ -30,7 +33,7 @@ export const Pool = () => {
         </TabsContent>
         <TabsContent value="position">
           <AddPositionModal refetch={refecthPosition} />
-          <PositionTable tableData={positionData} />
+          <PositionTable tableData={positionData} burnPosition={burnPosition} collectPosition={collectPosition}  />
         </TabsContent>
       </Tabs>
     </>

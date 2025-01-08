@@ -37,8 +37,8 @@ const formSchema = z.object({
   token0: z.string().min(42, "Token 0 address must be 42 characters long"),
   token1: z.string().min(42, "Token 1 address must be 42 characters long"),
   fee: z.number().min(0, "Fee must be a positive number"),
-  tickLower: z.number(),
-  tickUpper: z.number(),
+  priceLower: z.number().min(0, "Price lower must be a positive number"),
+  priceUpper: z.number().min(0, "Price upper must be a positive number"),
   price: z.number().min(0, "Price must be a positive number"),
 });
 
@@ -46,8 +46,8 @@ interface FormParams {
   token0: `0x${string}`;
   token1: `0x${string}`;
   fee: number;
-  tickLower: number;
-  tickUpper: number;
+  priceLower: number;
+  priceUpper: number;
   price: number;
 }
 
@@ -62,9 +62,9 @@ export const AddPoolModal = ({ refetch }: AddPoolModalProps) => {
     token1: getContractAddress("DebugTokenA") as `0x${string}`,
     token0: getContractAddress("DebugTokenB") as `0x${string}`,
     fee: 3000,
-    tickLower: -887272,
-    tickUpper: 887272,
-    price: 3000,
+    priceLower: 1,
+    priceUpper: 1.5,
+    price: 1.2,
   };
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,14 +72,16 @@ export const AddPoolModal = ({ refetch }: AddPoolModalProps) => {
       token0: defaultParams.token0,
       token1: defaultParams.token1,
       fee: defaultParams.fee,
-      tickLower: defaultParams.tickLower,
-      tickUpper: defaultParams.tickUpper,
+      priceLower: defaultParams.priceLower,
+      priceUpper: defaultParams.priceUpper,
       price: defaultParams.price,
     },
   });
   const { writeContractAsync } =
     useWritePoolManagerCreateAndInitializePoolIfNecessary();
   const handleAdd = async (values: z.infer<typeof formSchema>) => {
+    const tickLower = Math.floor(Math.log(values.priceLower) / Math.log(1.0001));
+    const tickUpper = Math.ceil(Math.log(values.priceUpper) / Math.log(1.0001));
     await writeContractAsync({
       address: getContractAddress("PoolManager"),
       args: [
@@ -87,8 +89,8 @@ export const AddPoolModal = ({ refetch }: AddPoolModalProps) => {
           token0: values.token0 as `0x${string}`,
           token1: values.token1 as `0x${string}`,
           fee: values.fee,
-          tickLower: values.tickLower,
-          tickUpper: values.tickUpper,
+          tickLower: tickLower,
+          tickUpper: tickUpper,
           sqrtPriceX96: parsePriceToSqrtPriceX96(values.price),
         },
       ],
@@ -204,15 +206,15 @@ export const AddPoolModal = ({ refetch }: AddPoolModalProps) => {
             />
             <FormField
               control={form.control}
-              name="tickLower"
+              name="priceLower"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tick Lower</FormLabel>
+                  <FormLabel>Price Lower</FormLabel>
                   <FormControl>
-                    <Input placeholder="Tick Lower" type="number" {...field} />
+                    <Input placeholder="Price Lower" type="number" {...field} />
                   </FormControl>
                   <FormDescription>
-                    Lower tick boundary for the pool.
+                    Lower price for the pool.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -220,15 +222,15 @@ export const AddPoolModal = ({ refetch }: AddPoolModalProps) => {
             />
             <FormField
               control={form.control}
-              name="tickUpper"
+              name="priceUpper"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tick Upper</FormLabel>
+                  <FormLabel>Price Upper</FormLabel>
                   <FormControl>
-                    <Input placeholder="Tick Upper" type="number" {...field} />
+                    <Input placeholder="Price Upper" type="number" {...field} />
                   </FormControl>
                   <FormDescription>
-                    Upper tick boundary for the pool.
+                    Upper price for the pool.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -243,7 +245,9 @@ export const AddPoolModal = ({ refetch }: AddPoolModalProps) => {
                   <FormControl>
                     <Input placeholder="Price" type="number" {...field} />
                   </FormControl>
-                  <FormDescription>Initial price for the pool.</FormDescription>
+                  <FormDescription>
+                    initial price for the pool.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

@@ -6,7 +6,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { computeSqrtPriceLimitX96, getContractAddress, parseAmountToBigInt, parseBigIntToAmount } from "@/utils/common";
+import {
+  computeSqrtPriceLimitX96,
+  getContractAddress,
+  parseAmountToBigInt,
+  parseBigIntToAmount,
+} from "@/utils/common";
 import { useEffect, useState } from "react";
 import {
   swapRouterAbi,
@@ -15,14 +20,17 @@ import {
   useWriteSwapRouterExactInput,
   useWriteSwapRouterExactOutput,
 } from "./utils/contracts";
-import { usePublicClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
+import { ArrowDownUp } from "lucide-react";
 import { useToast } from "./hooks/use-toast";
 const TOKENA_ADDRESS = getContractAddress("DebugTokenA");
 const TOKENB_ADDRESS = getContractAddress("DebugTokenB");
 const TOKENC_ADDRESS = getContractAddress("DebugTokenC");
 const Swap = () => {
+  const { address } = useAccount();
   const [tokenA, setTokenA] = useState<`0x${string}`>(TOKENA_ADDRESS);
   const [tokenB, setTokenB] = useState<`0x${string}`>(TOKENB_ADDRESS);
+  const [loading, setLoading] = useState(false);
   const [amountA, setAmountA] = useState(0.0);
   const [amountB, setAmountB] = useState(0.0);
   // 是否是指定输入（否则就是指定输出）
@@ -82,7 +90,7 @@ const Swap = () => {
     if (tokenA === tokenB) {
       toast({
         title: "Please select different tokens",
-      })
+      });
       return;
     }
     try {
@@ -102,12 +110,12 @@ const Swap = () => {
       });
       setAmountB(parseBigIntToAmount(newAmountB.result));
       setIsExactInput(true);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       toast({
         title: "Failed to get quote",
         description: e.message,
-      })
+      });
     }
   };
 
@@ -132,15 +140,82 @@ const Swap = () => {
       });
       setAmountA(parseBigIntToAmount(newAmountA.result));
       setIsExactInput(false);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       toast({
         title: "Failed to get quote",
         description: e.message,
-      })
+      });
     }
   };
+  const handleSwitch = () => {
+    setTokenA(tokenB);
+    setTokenB(tokenA);
+    setAmountA(amountB);
+    setAmountB(amountA);
+    setIsExactInput(!isExactInput);
+  };
+  const handleSwap = async () => {
+    setLoading(true);
+    try {
+      if (isExactInput) {
+        const swapParams = {
+          tokenIn: tokenA!,
+          tokenOut: tokenB!,
+          amountIn: parseAmountToBigInt(amountA),
+          amountOutMinimum: parseAmountToBigInt(amountB),
+          recipient: address as `0x${string}`,
+          deadline: BigInt(Math.floor(Date.now() / 1000) + 1000),
+          sqrtPriceLimitX96,
+          indexPath: swapIndexPath,
+        };
+        console.log("swapParams", swapParams);
+        await writeApprove({
+          address: tokenA!,
+          args: [getContractAddress("SwapRouter"), swapParams.amountIn],
+        });
+        await writeExactInput({
+          address: getContractAddress("SwapRouter"),
+          args: [swapParams],
+        });
+      } else {
+        const swapParams = {
+          tokenIn: tokenA!,
+          tokenOut: tokenB!,
+          amountOut: parseAmountToBigInt(amountB),
+          amountInMaximum: parseAmountToBigInt(Math.ceil(amountA)),
+          recipient: address as `0x${string}`,
+          deadline: BigInt(Math.floor(Date.now() / 1000) + 1000),
+          sqrtPriceLimitX96,
+          indexPath: swapIndexPath,
+        };
+        console.log("swapParams", swapParams);
+        await writeApprove({
+          address: tokenA!,
+          args: [getContractAddress("SwapRouter"), swapParams.amountInMaximum],
+        });
+        await writeExactOutput({
+          address: getContractAddress("SwapRouter"),
+          args: [swapParams],
+        });
+      }
+      toast({
+        title: "Swap success",
+      })
+      // message.success("Swap success");
 
+      setAmountA(0);
+      setAmountB(0);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
+      toast({
+        title: "Swap failed",
+        description: e.message,
+      })
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     // 当用户输入发生变化时，重新请求报价接口计算价格
     if (isExactInput) {
@@ -189,6 +264,13 @@ const Swap = () => {
           </Select>
         </div>
       </div>
+      <div className="flex justify-center">
+        <ArrowDownUp
+          onClick={handleSwitch}
+          className="cursor-pointer hover:opacity-50"
+          size={24}
+        />
+      </div>
       <div className="p-5 bg-gray-50 rounded-md flex justify-between align-top">
         <div className="w-[70%]">
           <input
@@ -218,7 +300,7 @@ const Swap = () => {
           </Select>
         </div>
       </div>
-      <Button className="w-full">Swap</Button>
+      <Button className="w-full" onClick={handleSwap}>Swap</Button>
     </div>
   );
 };

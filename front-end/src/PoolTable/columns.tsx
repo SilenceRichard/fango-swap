@@ -49,14 +49,29 @@ export const columns: ColumnDef<PoolList>[] = [
   },
   {
     accessorKey: "tickLower",
-    header: "Tick Lower",
+    header: "Price Lower",
+    cell: (cell) => {
+      const tickLower: number = cell.getValue() as unknown as number;
+      const realPrice = Math.pow(1.0001, tickLower);
+      return <div>{realPrice.toFixed(6)}</div>; // 展示6位小数
+    },
   },
   {
     accessorKey: "tickUpper",
-    header: "Tick Upper",
+    header: "Price Upper",
+    cell: (cell) => {
+      const tickUpper: number = cell.getValue() as unknown as number;
+      const realPrice = Math.pow(1.0001, tickUpper);
+      return <div>{realPrice.toFixed(6)}</div>; // 展示6位小数
+    },
   },
   {
     accessorKey: "sqrtPriceX96",
-    header: "Sqrt Price X96",
+    header: "Price",
+    cell: (cell) => {
+      const sqrtPriceX96: bigint = cell.getValue() as unknown as bigint;
+      const realPrice = (Number(sqrtPriceX96) ** 2) / (2 ** 192);
+      return <div>{realPrice.toFixed(6)}</div>; // 展示6位小数
+    },
   },
 ];

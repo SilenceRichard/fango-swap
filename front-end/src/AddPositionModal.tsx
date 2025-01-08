@@ -1,4 +1,4 @@
-import { getContractAddress } from "@/utils/common";
+import { getContractAddress, parseAmountToBigInt } from "@/utils/common";
 import {
   useWriteErc20Approve,
   useWritePositionManagerMint,
@@ -42,10 +42,10 @@ const formSchema = z.object({
   token1: z.string().min(42, "Token 1 address must be 42 characters long"),
   index: z.number().min(0, "Index must be a positive number"),
   amount0Desired: z
-    .string()
+    .number()
     .min(1, "Amount 0 desired must be a positive number"),
   amount1Desired: z
-    .string()
+    .number()
     .min(1, "Amount 1 desired must be a positive number"),
 });
 
@@ -53,8 +53,8 @@ interface FormParams {
   token0: `0x${string}`;
   token1: `0x${string}`;
   index: number;
-  amount0Desired: string;
-  amount1Desired: string;
+  amount0Desired: number;
+  amount1Desired: number;
 }
 
 interface AddPositionModalProps {
@@ -66,11 +66,11 @@ export const AddPositionModal = ({ refetch }: AddPositionModalProps) => {
   const [open, setOpen] = useState(false);
   const { address } = useAccount();
   const defaultParams: FormParams = {
-    token0: getContractAddress("DebugTokenB") as `0x${string}`,
-    token1: getContractAddress("DebugTokenA") as `0x${string}`,
+    token0: getContractAddress("DebugTokenA") as `0x${string}`,
+    token1: getContractAddress("DebugTokenB") as `0x${string}`,
     index: 0,
-    amount0Desired: "1000000000000000000",
-    amount1Desired: "1000000000000000000",
+    amount0Desired: 100,
+    amount1Desired: 100,
   };
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -89,14 +89,14 @@ export const AddPositionModal = ({ refetch }: AddPositionModalProps) => {
       address: values.token0 as `0x${string}`,
       args: [
         getContractAddress("PositionManager"),
-        BigInt(values.amount0Desired),
+        parseAmountToBigInt(values.amount0Desired),
       ],
     });
     await writeErc20Approve({
       address: values.token1 as `0x${string}`,
       args: [
         getContractAddress("PositionManager"),
-        BigInt(values.amount1Desired),
+        parseAmountToBigInt(values.amount1Desired),
       ],
     });
     await writeContractAsync({
@@ -106,8 +106,8 @@ export const AddPositionModal = ({ refetch }: AddPositionModalProps) => {
           token0: values.token0 as `0x${string}`,
           token1: values.token1 as `0x${string}`,
           index: values.index,
-          amount0Desired: BigInt(values.amount0Desired),
-          amount1Desired: BigInt(values.amount1Desired),
+          amount0Desired: parseAmountToBigInt(values.amount0Desired),
+          amount1Desired: parseAmountToBigInt(values.amount1Desired),
           recipient: address as `0x${string}`,
           deadline: BigInt(Date.now() + 100000),
         },
@@ -277,3 +277,4 @@ export const AddPositionModal = ({ refetch }: AddPositionModalProps) => {
     </Dialog>
   );
 };
+

@@ -58,12 +58,10 @@ describe("PoolManager", function () {
 
     // 判断返回的 pairs 的数量是否正确
     const pairs = await manager.read.getPairs();
-    console.log("pairs: ",pairs);
     expect(pairs.length).to.equal(2);
 
     // 判断返回的 pools 的数量、参数是否正确
     const pools = await manager.read.getAllPools();
-    console.log(pools);
     expect(pools.length).to.equal(2);
     expect(pools[0].token0).to.equal(tokenA);
     expect(pools[0].token1).to.equal(tokenB);
