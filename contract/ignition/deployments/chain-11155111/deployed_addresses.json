@@ -1,0 +1,8 @@
+{
+  "DebugToken#DebugTokenA": "0xC284A4BaDb6E9c106cbFFF75F68df043a85eB4ff",
+  "DebugToken#DebugTokenB": "0x9BeA33032EcfCE8B29D4d84789387fE0eb1856ad",
+  "DebugToken#DebugTokenC": "0xB86f0885DAADC620D84530DFE2841b0Ee01414D8",
+  "FangoSwap#PoolManager": "0x64749fBc6Fcf7711FecF75E1C704E51c923E1D67",
+  "FangoSwap#PositionManager": "0x3A3c09d9Cab6907118140baC70405529C93E2A5e",
+  "FangoSwap#SwapRouter": "0x96593206C24C05ba8D17870F5cBAaD9fB79D211A"
+}
