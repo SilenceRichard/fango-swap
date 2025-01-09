@@ -1,5 +1,8 @@
-import { parsePriceToSqrtPriceX96, getContractAddress } from "@/utils/common";
-import { useWritePoolManagerCreateAndInitializePoolIfNecessary } from "@/utils/contracts";
+import { getContractAddress, parseAmountToBigInt } from "@/utils/common";
+import {
+  useWriteErc20Approve,
+  useWritePositionManagerMint,
+} from "@/utils/contracts";
 import { Button } from "./components/ui/button";
 import { useToast } from "./hooks/use-toast";
 import {
@@ -32,71 +35,86 @@ import {
   SelectValue,
 } from "./components/ui/select";
 import { useState } from "react";
+import { useAccount } from "wagmi";
 
 const formSchema = z.object({
   token0: z.string().min(42, "Token 0 address must be 42 characters long"),
   token1: z.string().min(42, "Token 1 address must be 42 characters long"),
-  fee: z.number().min(0, "Fee must be a positive number"),
-  priceLower: z.number().min(0, "Price lower must be a positive number"),
-  priceUpper: z.number().min(0, "Price upper must be a positive number"),
-  price: z.number().min(0, "Price must be a positive number"),
+  index: z.number().min(0, "Index must be a positive number"),
+  amount0Desired: z
+    .number()
+    .min(1, "Amount 0 desired must be a positive number"),
+  amount1Desired: z
+    .number()
+    .min(1, "Amount 1 desired must be a positive number"),
 });
 
 interface FormParams {
   token0: `0x${string}`;
   token1: `0x${string}`;
-  fee: number;
-  priceLower: number;
-  priceUpper: number;
-  price: number;
+  index: number;
+  amount0Desired: number;
+  amount1Desired: number;
 }
 
-interface AddPoolModalProps {
+interface AddPositionModalProps {
   refetch: () => void;
 }
 
-export const AddPoolModal = ({ refetch }: AddPoolModalProps) => {
+export const AddPositionModal = ({ refetch }: AddPositionModalProps) => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const { address } = useAccount();
   const defaultParams: FormParams = {
-    token1: getContractAddress("DebugTokenA") as `0x${string}`,
-    token0: getContractAddress("DebugTokenB") as `0x${string}`,
-    fee: 3000,
-    priceLower: 1,
-    priceUpper: 1.5,
-    price: 1.2,
+    token0: getContractAddress("DebugTokenA") as `0x${string}`,
+    token1: getContractAddress("DebugTokenB") as `0x${string}`,
+    index: 0,
+    amount0Desired: 100,
+    amount1Desired: 100,
   };
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       token0: defaultParams.token0,
       token1: defaultParams.token1,
-      fee: defaultParams.fee,
-      priceLower: defaultParams.priceLower,
-      priceUpper: defaultParams.priceUpper,
-      price: defaultParams.price,
+      index: defaultParams.index,
+      amount0Desired: defaultParams.amount0Desired,
+      amount1Desired: defaultParams.amount1Desired,
     },
   });
-  const { writeContractAsync } =
-    useWritePoolManagerCreateAndInitializePoolIfNecessary();
+  const { writeContractAsync } = useWritePositionManagerMint();
+  const { writeContractAsync: writeErc20Approve } = useWriteErc20Approve();
   const handleAdd = async (values: z.infer<typeof formSchema>) => {
-    const tickLower = Math.floor(Math.log(values.priceLower) / Math.log(1.0001));
-    const tickUpper = Math.ceil(Math.log(values.priceUpper) / Math.log(1.0001));
+    await writeErc20Approve({
+      address: values.token0 as `0x${string}`,
+      args: [
+        getContractAddress("PositionManager"),
+        parseAmountToBigInt(values.amount0Desired),
+      ],
+    });
+    await writeErc20Approve({
+      address: values.token1 as `0x${string}`,
+      args: [
+        getContractAddress("PositionManager"),
+        parseAmountToBigInt(values.amount1Desired),
+      ],
+    });
     await writeContractAsync({
-      address: getContractAddress("PoolManager"),
+      address: getContractAddress("PositionManager"),
       args: [
         {
           token0: values.token0 as `0x${string}`,
           token1: values.token1 as `0x${string}`,
-          fee: values.fee,
-          tickLower: tickLower,
-          tickUpper: tickUpper,
-          sqrtPriceX96: parsePriceToSqrtPriceX96(values.price),
+          index: values.index,
+          amount0Desired: parseAmountToBigInt(values.amount0Desired),
+          amount1Desired: parseAmountToBigInt(values.amount1Desired),
+          recipient: address as `0x${string}`,
+          deadline: BigInt(Date.now() + 100000),
         },
       ],
     });
     toast({
-      title: "Add pool success",
+      title: "Add position success",
     });
     setOpen(false);
     refetch();
@@ -104,14 +122,12 @@ export const AddPoolModal = ({ refetch }: AddPoolModalProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Add Pool</Button>
+        <Button>Add Positions</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Pool</DialogTitle>
-          <DialogDescription>
-            Add a new pool with the specified parameters
-          </DialogDescription>
+          <DialogTitle>Add Positions</DialogTitle>
+          <DialogDescription>Add a position to a pool</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -131,7 +147,7 @@ export const AddPoolModal = ({ refetch }: AddPoolModalProps) => {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select token addres" />
+                          <SelectValue placeholder="Select token address" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -167,7 +183,7 @@ export const AddPoolModal = ({ refetch }: AddPoolModalProps) => {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select token addres" />
+                          <SelectValue placeholder="Select token address" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -192,29 +208,33 @@ export const AddPoolModal = ({ refetch }: AddPoolModalProps) => {
             />
             <FormField
               control={form.control}
-              name="fee"
+              name="index"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Fee</FormLabel>
+                  <FormLabel>Index</FormLabel>
                   <FormControl>
-                    <Input placeholder="Fee" type="number" {...field} />
+                    <Input placeholder="Index" type="number" {...field} />
                   </FormControl>
-                  <FormDescription>Fee for the pool.</FormDescription>
+                  <FormDescription>Index of the pool.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
-              name="priceLower"
+              name="amount0Desired"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price Lower</FormLabel>
+                  <FormLabel>Amount 0 Desired</FormLabel>
                   <FormControl>
-                    <Input placeholder="Price Lower" type="number" {...field} />
+                    <Input
+                      placeholder="Amount 0 Desired"
+                      type="number"
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
-                    Lower price for the pool.
+                    Desired amount of the first token.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -222,31 +242,19 @@ export const AddPoolModal = ({ refetch }: AddPoolModalProps) => {
             />
             <FormField
               control={form.control}
-              name="priceUpper"
+              name="amount1Desired"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price Upper</FormLabel>
+                  <FormLabel>Amount 1 Desired</FormLabel>
                   <FormControl>
-                    <Input placeholder="Price Upper" type="number" {...field} />
+                    <Input
+                      placeholder="Amount 1 Desired"
+                      type="number"
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
-                    Upper price for the pool.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Price</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Price" type="number" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    initial price for the pool.
+                    Desired amount of the second token.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -256,6 +264,7 @@ export const AddPoolModal = ({ refetch }: AddPoolModalProps) => {
         </Form>
         <DialogFooter className="sm:justify-end">
           <Button
+            type="submit"
             onClick={() => {
               const values = form.getValues();
               handleAdd(values);
@@ -268,3 +277,4 @@ export const AddPoolModal = ({ refetch }: AddPoolModalProps) => {
     </Dialog>
   );
 };
+

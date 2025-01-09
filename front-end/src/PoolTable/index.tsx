@@ -10,7 +10,7 @@ interface PoolTableProps {
 export default function PoolTable({ tableData }: PoolTableProps) {
 
   return (
-    <div className="container py-10">
+    <div className="container py-2">
       <DataTable columns={columns} data={tableData} />
     </div>
   );
