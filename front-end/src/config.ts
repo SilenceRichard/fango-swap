@@ -1,14 +1,15 @@
 import { http, createConfig } from "wagmi";
-import { mainnet, hardhat } from "wagmi/chains";
+import { mainnet, hardhat, sepolia } from "wagmi/chains";
 import { getDefaultConfig } from "connectkit";
 
 export const config = createConfig(
   getDefaultConfig({
     // Your dApps chains
     
-    chains: [hardhat],
+    chains: [hardhat,sepolia],
     transports: {
       [hardhat.id]: http("http://localhost:8545"),
+      [sepolia.id]: http("https://eth-sepolia.g.alchemy.com/v2/cEALgnMYS1N0l6ZOp7JawQmDytmSfLpJ"),
       // RPC URL for each chain
       [mainnet.id]: http(
         // `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`

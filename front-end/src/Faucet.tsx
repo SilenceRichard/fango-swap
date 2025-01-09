@@ -2,7 +2,7 @@ import { useWriteDebugTokenMint } from "@/utils/contracts";
 import { useAccount, useSwitchChain } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { getContractAddress } from "@/utils/common";
-import { hardhat } from "viem/chains";
+import { sepolia } from "viem/chains";
 import { z } from "zod";
 import { FaucetForm } from "./FaucetForm";
 import { useForm } from "react-hook-form";
@@ -40,10 +40,10 @@ const Faucet = () => {
             // message.warning("Please connect wallet");
             return;
           }
-          if (chainId !== hardhat.id) {
+          if (chainId !== sepolia.id) {
             try {
               await switchChain?.({
-                chainId: hardhat.id,
+                chainId: sepolia.id,
               });
             } catch (error) {
               console.error("Failed to switch network", error);
@@ -57,7 +57,7 @@ const Faucet = () => {
           try {
             await writeContractAsync({
               address: tokenAddress,
-              chainId: hardhat.id,
+              chainId: sepolia.id,
               args: [address as `0x${string}`, BigInt(amount * 10 ** 18)],
             });
             toast({
