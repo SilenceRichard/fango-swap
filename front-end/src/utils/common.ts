@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { encodeSqrtRatioX96, TickMath } from "@uniswap/v3-sdk";
 import { minBy, maxBy } from "lodash-es";
 
@@ -67,7 +68,7 @@ export const computeSqrtPriceLimitX96 = (
     // 如果是 token0 交换 token1，那么交易完成后价格 token0 变多，价格下降下限
     // 先找到交易池的最小 tick
     const minTick =
-      minBy(pools, (pool) => pool.tick)?.tick ?? TickMath.MIN_TICK;
+      minBy(pools, (pool: any) => pool.tick)?.tick ?? TickMath.MIN_TICK;
     // 价格限制为最小 tick - 10000，避免价格过低，在实际项目中应该按照用户设置的滑点来调整
     const limitTick = Math.max(minTick - 10000, TickMath.MIN_TICK);
     return BigInt(TickMath.getSqrtRatioAtTick(limitTick).toString());
@@ -75,7 +76,7 @@ export const computeSqrtPriceLimitX96 = (
     // 反之，设置一个最大的价格
     // 先找到交易池的最大 tick
     const maxTick =
-      maxBy(pools, (pool) => pool.tick)?.tick ?? TickMath.MAX_TICK;
+      maxBy(pools, (pool: any) => pool.tick)?.tick ?? TickMath.MAX_TICK;
     // 价格限制为最大 tick + 10000，避免价格过高，在实际项目中应该按照用户设置的滑点来调整
     const limitTick = Math.min(maxTick + 10000, TickMath.MAX_TICK);
     return BigInt(TickMath.getSqrtRatioAtTick(limitTick).toString());
