@@ -30,7 +30,6 @@ const Swap = () => {
   const { address } = useAccount();
   const [tokenA, setTokenA] = useState<`0x${string}`>(TOKENA_ADDRESS);
   const [tokenB, setTokenB] = useState<`0x${string}`>(TOKENB_ADDRESS);
-  const [loading, setLoading] = useState(false);
   const [amountA, setAmountA] = useState(0.0);
   const [amountB, setAmountB] = useState(0.0);
   // 是否是指定输入（否则就是指定输出）
@@ -156,7 +155,6 @@ const Swap = () => {
     setIsExactInput(!isExactInput);
   };
   const handleSwap = async () => {
-    setLoading(true);
     try {
       if (isExactInput) {
         const swapParams = {
@@ -206,14 +204,12 @@ const Swap = () => {
 
       setAmountA(0);
       setAmountB(0);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       toast({
         title: "Swap failed",
         description: e.message,
       })
-    } finally {
-      setLoading(false);
     }
   };
   useEffect(() => {
