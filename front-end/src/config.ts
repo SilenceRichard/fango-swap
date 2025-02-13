@@ -6,7 +6,7 @@ export const config = createConfig(
   getDefaultConfig({
     // Your dApps chains
     
-    chains: [hardhat,sepolia],
+    chains: [sepolia],
     transports: {
       [hardhat.id]: http("http://localhost:8545"),
       [sepolia.id]: http("https://eth-sepolia.g.alchemy.com/v2/cEALgnMYS1N0l6ZOp7JawQmDytmSfLpJ"),

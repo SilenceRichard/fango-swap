@@ -6,8 +6,20 @@ import Faucet from "./Faucet";
 import { Toaster } from "./components/ui/toaster";
 import { Pool } from "./Pool";
 import Swap from "./Swap";
+import { useAccount, useSwitchChain } from "wagmi";
+import { useEffect } from "react";
+import { sepolia } from "viem/chains";
 
 function App() {
+  const { switchChain } = useSwitchChain();
+  const { chainId } = useAccount();
+  useEffect(() => {
+    if (chainId !== sepolia.id) {
+      switchChain?.({
+        chainId: sepolia.id,
+      });
+    }
+  }, [chainId]);
   return (
     <Web3Provider>
       <Toaster />

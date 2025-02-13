@@ -63,7 +63,7 @@ describe("PositionManager", function () {
     await token1.write.approve([manager.address, initBalanceValue]);
 
     // mint
-    await manager.write.mint([
+    const res = await manager.write.mint([
       {
         token0: token0.address,
         token1: token1.address,
@@ -74,7 +74,6 @@ describe("PositionManager", function () {
         deadline: BigInt(Date.now() + 3000),
       },
     ]);
-
     // mint 成功，检查余额
     expect(await token0.read.balanceOf([sender])).to.equal(
       999949496579641839195n
@@ -124,7 +123,7 @@ describe("PositionManager", function () {
     ]);
 
     // mint anthor 1000
-    await manager.write.mint([
+    const res = await manager.write.mint([
       {
         token0: token0.address,
         token1: token1.address,
@@ -135,6 +134,7 @@ describe("PositionManager", function () {
         deadline: BigInt(Date.now() + 3000),
       },
     ]);
+    console.log("res ==", res);
     // 通过 TestSwap 合约交易
     const testSwap = await hre.viem.deployContract("TestSwap");
     const minPrice = 1000;
